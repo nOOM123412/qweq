@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Локальные данные и секреты
+.env
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Системное
+.DS_Store
+.idea/
+.vscode/

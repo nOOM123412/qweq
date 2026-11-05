@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# Документация
+README.md
+*.md
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Локальное окружение и данные
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+data/
+*.db
+*.db-shm
+*.db-wal
+*.log

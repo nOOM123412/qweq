@@ -493,17 +493,19 @@ function toggleProduct(key) {
 async function buyProduct(productKey, planCode, periodCode, price, title) {
   haptic();
   if (!userId) return showToast('Не удалось определить пользователя', true);
-
+  state.lastOrder = { productKey, planCode, periodCode, price, title };
   openModal('Оформление заказа', `
     <div class="modal-row"><span class="k">Товар</span><span class="v">${esc(title)}</span></div>
     <div class="modal-row"><span class="k">Стоимость</span><span class="v">${fm(price)} ₽</span></div>
     <div class="modal-row"><span class="k">Оплата</span><span class="v">CryptoBot</span></div>
-    <button class="btn btn-white" style="margin-top:16px" onclick="confirmBuy(${JSON.stringify({productKey, planCode, periodCode, price, title}).replace(/"/g, '&quot;')})">💳 Оплатить</button>
+    <button class="btn btn-white" style="margin-top:16px" onclick="confirmBuy()">💳 Оплатить</button>
     <button class="btn btn-outline" onclick="closeModal()">Отмена</button>
   `);
 }
 
-async function confirmBuy(params) {
+async function confirmBuy() {
+  const params = state.lastOrder;
+  if (!params) return showToast('Заказ не найден', true);
   try {
     const res = await api('/api/buy', {
       method: 'POST',
@@ -516,12 +518,32 @@ async function confirmBuy(params) {
     });
     closeModal();
     if (res.pay_url) {
-      tg.openTelegramLink(res.pay_url);
+      // запоминаем счёт, чтобы проверить оплату после возврата из CryptoBot
+      try { sessionStorage.setItem('lastInvoice', String(res.invoice_id || '')); } catch (e) {}
+      try { tg.openTelegramLink(res.pay_url); }
+      catch (e) { window.open(res.pay_url, '_blank'); }
       showToast('Перенаправляю в CryptoBot...');
     } else {
       showToast('Ошибка: нет ссылки на оплату', true);
     }
   } catch (e) { showToast(e.message, true); }
+}
+
+// Проверяем, оплачен ли последний счёт (после возврата пользователя из CryptoBot)
+async function checkLastInvoice() {
+  let invoiceId = '';
+  try { invoiceId = sessionStorage.getItem('lastInvoice') || ''; } catch (e) {}
+  if (!invoiceId) return;
+  try {
+    const res = await api('/api/invoice-status?invoice_id=' + encodeURIComponent(invoiceId));
+    if (res.status === 'paid') {
+      try { sessionStorage.removeItem('lastInvoice'); } catch (e) {}
+      showToast('✅ Оплата получена! Проверьте «Мои покупки» в боте');
+    } else if (res.status === 'expired') {
+      try { sessionStorage.removeItem('lastInvoice'); } catch (e) {}
+      showToast('⌛ Счёт истёк, создайте новый', true);
+    }
+  } catch (e) {}
 }
 
 async function loadCatalog() {
@@ -543,9 +565,12 @@ async function loadCatalog() {
 }
 
 async function boot() {
-  try { tg.ready(); } catch (e) {}
+  try { tg.ready(); tg.expand(); } catch (e) {}
   userId = await waitForUserId(3000);
   loadCatalog();
+  // если пользователь вернулся из CryptoBot — проверим, оплачен ли счёт
+  try { tg.onEvent('activated', checkLastInvoice); } catch (e) {}
+  setTimeout(checkLastInvoice, 1500);
 }
 
 boot();
