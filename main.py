@@ -5,6 +5,7 @@ import html
 import logging
 import os
 import secrets
+import time
 from typing import Optional
 
 import aiosqlite
@@ -101,6 +102,19 @@ async def db_init() -> None:
                 created_at TEXT DEFAULT (datetime('now'))
             );
             CREATE INDEX IF NOT EXISTS idx_topups_user ON topups(user_id, status);
+
+            -- Обращения в поддержку: сообщение из мини-аппа уходит админам,
+            -- ответ админа возвращается пользователю в этот же чат бота.
+            CREATE TABLE IF NOT EXISTS tickets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                username TEXT,
+                name TEXT,
+                text TEXT,
+                status TEXT DEFAULT 'open',
+                created_at TEXT DEFAULT (datetime('now'))
+            );
+            CREATE INDEX IF NOT EXISTS idx_tickets_user ON tickets(user_id, status);
             """
         )
         await db.commit()
@@ -152,6 +166,38 @@ async def db_set_topup_status(req_id: int, status: str) -> None:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("UPDATE topups SET status = ? WHERE id = ?", (status, req_id))
         await db.commit()
+
+
+# ------------------------------------------------------------
+#  Поддержка: заявки из мини-аппа
+# ------------------------------------------------------------
+async def db_create_ticket(user_id: int, text: str, username: str = "", name: str = "") -> int:
+    async with aiosqlite.connect(DB_PATH) as db:
+        cur = await db.execute(
+            "INSERT INTO tickets (user_id, username, name, text) VALUES (?, ?, ?, ?)",
+            (user_id, username, name, text),
+        )
+        await db.commit()
+        return int(cur.lastrowid or 0)
+
+
+async def db_set_ticket_status(ticket_id: int, status: str) -> None:
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("UPDATE tickets SET status = ? WHERE id = ?", (status, ticket_id))
+        await db.commit()
+
+
+async def db_open_ticket_for_user(user_id: int):
+    """Последняя необработанная заявка пользователя (для ответов админа)."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        cur = await db.execute(
+            "SELECT * FROM tickets WHERE user_id = ? AND status = 'open' "
+            "ORDER BY id DESC LIMIT 1",
+            (user_id,),
+        )
+        return await cur.fetchone()
+
 
 
 
@@ -360,6 +406,69 @@ async def wa_invoice_status(request: web.Request) -> web.Response:
     return web.json_response({"status": inv.status})
 
 
+async def wa_support(request: web.Request) -> web.Response:
+    """Сообщение из окна поддержки в мини-аппе → админам в Telegram."""
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "bad json"}, status=400)
+
+    text = str(data.get("text") or "").strip()
+    if len(text) < 3:
+        return web.json_response({"error": "Напишите сообщение (минимум 3 символа)"}, status=400)
+    if len(text) > 2000:
+        text = text[:2000]
+
+    try:
+        user_id = int(data.get("user_id") or 0)
+    except (TypeError, ValueError):
+        user_id = 0
+
+    username = str(data.get("username") or "").strip()[:64]
+    name = str(data.get("name") or "").strip()[:64]
+
+    if not user_id:
+        return web.json_response({"error": "Не удалось определить пользователя"}, status=400)
+
+    ticket_id = await db_create_ticket(user_id, text, username, name)
+    await notify_admins_ticket(ticket_id, user_id, username, name, text)
+
+    if not ADMIN_IDS:
+        log.warning("ADMIN_IDS не задан — обращение #%s сохранено, но не отправлено", ticket_id)
+
+    return web.json_response({"ok": True, "ticket_id": ticket_id})
+
+
+async def notify_admins_ticket(
+    ticket_id: int, user_id: int, username: str, name: str, text: str
+) -> None:
+    if not ADMIN_IDS:
+        return
+    who = f"<a href=\"tg://user?id={user_id}\">{html.escape(name or 'Пользователь')}</a>"
+    uname = f" (@{html.escape(username)})" if username else ""
+    body = (
+        f"🆘 <b>Обращение в поддержку #{ticket_id}</b>\n\n"
+        f"От: {who}{uname}\n"
+        f"ID: <code>{user_id}</code>\n\n"
+        f"<blockquote>{html.escape(text)}</blockquote>\n\n"
+        f"<i>Ответьте на это сообщение — текст уйдёт пользователю в чат.</i>"
+    )
+    for admin_id in ADMIN_IDS:
+        try:
+            sent = await bot.send_message(admin_id, body, disable_web_page_preview=True)
+            # запоминаем, какому тикету принадлежит сообщение админа
+            TICKET_MESSAGES[(admin_id, sent.message_id)] = (ticket_id, user_id)
+        except Exception:  # noqa: BLE001
+            log.warning("не удалось отправить обращение админу %s", admin_id)
+
+
+# (admin_id, message_id) -> (ticket_id, user_id); нужно для ответов админа реплаем
+TICKET_MESSAGES: dict[tuple[int, int], tuple[int, int]] = {}
+
+# user_id -> время последнего обращения (антифлуд)
+SUPPORT_COOLDOWN: dict[int, float] = {}
+
+
 async def wa_static(request: web.Request) -> web.StreamResponse:
     name = request.match_info.get("name", "")
     name = os.path.basename(name)
@@ -392,6 +501,7 @@ def build_app() -> web.Application:
     app.router.add_get("/api/catalog", wa_catalog)
     app.router.add_post("/api/buy", wa_buy)
     app.router.add_get("/api/invoice-status", wa_invoice_status)
+    app.router.add_post("/api/support", wa_support)
     app.router.add_post(WEBHOOK_PATH, tg_webhook)
     app.router.add_get("/{name:[^{}/]+\\.(?:css|js|png|jpg|jpeg|gif|svg|ico|webp|json)}", wa_static)
     return app
@@ -424,36 +534,56 @@ def webapp_url(user_id: int = 0) -> str:
 
 
 def kb_open_app(user_id: int = 0) -> InlineKeyboardMarkup:
+    """Клавиатура под /start: только вход в мини-апп.
+
+    Поддержка и отзывы живут внутри мини-аппа, поэтому здесь ничего лишнего.
+    """
     rows = [
-        [InlineKeyboardButton(text="🚀 Открыть магазин", web_app=WebAppInfo(url=webapp_url(user_id)))],
-        [InlineKeyboardButton(text="🧾 Мои покупки", callback_data="my_orders")],
-        [InlineKeyboardButton(text="🆘 Поддержка", url=f"https://t.me/{SUPPORT_USERNAME}")],
+        [InlineKeyboardButton(text="🛍 Открыть Raise Store", web_app=WebAppInfo(url=webapp_url(user_id)))],
     ]
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 WELCOME_TEXT = (
-    "👋 <b>Admiral Shop</b> — премиум-подписки на AI-сервисы.\n\n"
-    "🤖 Claude · 💬 ChatGPT · ✨ Gemini\n\n"
-    "Нажми кнопку ниже, чтобы открыть каталог."
+    "👋 <b>Raise Store</b>\n\n"
+    "Премиум-подписки на AI-сервисы: <b>Claude</b>, <b>ChatGPT</b>, <b>Gemini</b>.\n\n"
+    "• Мгновенная выдача после оплаты\n"
+    "• Оплата в рублях через CryptoBot\n"
+    "• Поддержка отвечает в течение 15 минут\n\n"
+    "Нажмите кнопку ниже, чтобы открыть магазин."
 )
 
 
 @dp.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext) -> None:
     await state.clear()
-    await send_photo_msg(message, WELCOME_TEXT, kb_open_app(message.from_user.id))
+    # Фото может быть недоступно — не роняем /start, отправляем текст
+    await message.answer(
+        WELCOME_TEXT,
+        reply_markup=kb_open_app(message.from_user.id),
+        disable_web_page_preview=True,
+    )
 
 
-@dp.message(Command("help", "support"))
+@dp.message(Command("help"))
 async def cmd_help(message: Message) -> None:
     await message.answer(
         "🆘 <b>Поддержка</b>\n\n"
-        f"Напиши нам: @{SUPPORT_USERNAME}\n\n"
+        "Напишите ваш вопрос прямо в чат бота — сообщение уйдёт администратору, "
+        "и вам ответят здесь же.\n\n"
         "Доступные команды:\n"
-        "/start — открыть магазин\n"
+        "/start — открыть Raise Store\n"
         "/orders — мои заказы\n"
         "/id — мой Telegram ID"
+    )
+
+
+@dp.message(Command("support"))
+async def cmd_support(message: Message) -> None:
+    await message.answer(
+        "🆘 <b>Поддержка</b>\n\n"
+        "Опишите проблему одним сообщением — оно уйдёт администратору.\n"
+        "Ответ придёт сюда, в этот чат."
     )
 
 
@@ -465,12 +595,6 @@ async def cmd_id(message: Message) -> None:
 @dp.message(Command("orders"))
 async def cmd_orders(message: Message) -> None:
     await send_orders(message.from_user.id, message)
-
-
-@dp.callback_query(F.data == "my_orders")
-async def cb_my_orders(call: CallbackQuery) -> None:
-    await call.answer()
-    await send_orders(call.from_user.id, call.message)
 
 
 async def send_orders(user_id: int, target: Optional[Message]) -> None:
@@ -559,6 +683,87 @@ async def poll_invoices_task() -> None:
         except Exception:  # noqa: BLE001
             log.exception("ошибка фоновой проверки счетов")
 
+
+
+# ------------------------------------------------------------
+#  Чат поддержки: сообщение пользователя → админам,
+#  ответ админа реплаем → пользователю
+# ------------------------------------------------------------
+@dp.message(F.chat.type == "private")
+async def on_private_message(message: Message, state: FSMContext) -> None:
+    """Любое обычное сообщение в ЛС бота считается обращением в поддержку.
+
+    Зарегистрировано последним, поэтому не перехватывает команды.
+    """
+    if not message.text and not message.photo and not message.document:
+        await message.answer("Пожалуйста, опишите вопрос текстом — так поддержка ответит быстрее.")
+        return
+
+    user = message.from_user
+    text = message.text or message.caption or "[медиа-сообщение]"
+
+    if user.id in ADMIN_IDS:
+        await handle_admin_message(message)
+        return
+
+    # защита от флуда: не чаще одного обращения в 20 секунд
+    now = time.time()
+    last = SUPPORT_COOLDOWN.get(user.id, 0.0)
+    if now - last < 20:
+        await message.answer("Сообщение уже отправлено. Подождите немного — поддержка ответит здесь.")
+        return
+    SUPPORT_COOLDOWN[user.id] = now
+
+    ticket_id = await db_create_ticket(user.id, text, user.username or "", user.full_name or "")
+    await notify_admins_ticket(ticket_id, user.id, user.username or "", user.full_name or "", text)
+
+    if ADMIN_IDS:
+        await message.answer(
+            f"✅ <b>Обращение #{ticket_id} отправлено</b>\n\n"
+            "Поддержка ответит вам прямо в этом чате. Обычно это занимает до 15 минут."
+        )
+    else:
+        log.warning("ADMIN_IDS не задан — сообщение #%s сохранено без отправки", ticket_id)
+        await message.answer(
+            "✅ Сообщение принято. Мы свяжемся с вами в ближайшее время."
+        )
+
+
+async def handle_admin_message(message: Message) -> None:
+    """Админ ответил реплаем на обращение — отправляем текст пользователю."""
+    replied = message.reply_to_message
+    if replied is None:
+        await message.answer(
+            "Вы администратор. Чтобы ответить пользователю — сделайте <b>реплай</b> "
+            "на сообщение с обращением и напишите ответ."
+        )
+        return
+
+    key = (message.chat.id, replied.message_id)
+    target = TICKET_MESSAGES.get(key)
+    if target is None:
+        await message.answer("Не нашёл, к какому обращению относится этот ответ.")
+        return
+
+    ticket_id, user_id = target
+    try:
+        await bot.send_message(
+            user_id,
+            f"💬 <b>Ответ поддержки</b> (обращение #{ticket_id})\n\n{message.text or ''}",
+        )
+    except Exception as e:  # noqa: BLE001
+        await message.answer(f"❌ Не удалось отправить пользователю: {e}")
+        return
+
+    await db_set_ticket_status(ticket_id, "answered")
+    await message.answer(f"✅ Ответ отправлен пользователю (обращение #{ticket_id}).")
+
+
+@dp.callback_query(F.data == "my_orders")
+async def cb_my_orders(call: CallbackQuery) -> None:
+    """Оставлено для совместимости со старыми сообщениями в чатах."""
+    await call.answer()
+    await send_orders(call.from_user.id, call.message)
 
 
 # ============================================================

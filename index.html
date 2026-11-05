@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Admiral Shop</title>
+<title>Raise Store</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -16,6 +16,8 @@
     --muted: #8a8a8a;
     --accent: #ffffff;
     --radius: 20px;
+    --nav-h: 66px;
+    --nav-space: calc(var(--nav-h) + 26px + env(safe-area-inset-bottom));
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -24,8 +26,8 @@
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     font-size: 15px;
     min-height: 100vh;
-    padding-bottom: 40px;
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
     overflow-x: hidden;
   }
   body::before {
@@ -38,10 +40,11 @@
     pointer-events: none;
     z-index: 0;
   }
+
   .container {
     max-width: 520px;
     margin: 0 auto;
-    padding: 20px 16px;
+    padding: 20px 16px calc(20px + var(--nav-space));
     position: relative;
     z-index: 1;
     animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -54,8 +57,8 @@
   /* HERO */
   .hero {
     text-align: center;
-    margin-bottom: 28px;
-    padding: 20px 0;
+    margin-bottom: 24px;
+    padding: 14px 0 6px;
   }
   .hero-title {
     font-size: 32px;
@@ -71,6 +74,118 @@
     font-size: 14px;
     color: var(--muted);
     letter-spacing: 0.3px;
+  }
+
+  /* PANELS / HOME */
+  .panel {
+    background: linear-gradient(160deg, var(--card-2) 0%, var(--card) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 0;
+  }
+  .info-row + .info-row { border-top: 1px solid rgba(255,255,255,0.05); }
+  .info-ico {
+    width: 26px; height: 26px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .info-text { font-size: 13px; line-height: 1.45; color: #d4d4d4; }
+  .info-text b { color: var(--text); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat {
+    background: linear-gradient(160deg, var(--card-2) 0%, var(--card) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .stat-v {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 3px;
+  }
+  .stat-k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+
+  /* ACTION BUTTONS (главное меню) */
+  .actions { display: grid; gap: 12px; margin-top: 4px; }
+  .action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: linear-gradient(160deg, var(--card-2) 0%, var(--card) 100%);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
+  }
+  .action:active { transform: scale(0.975); border-color: rgba(255,255,255,0.3); }
+  .action-ico {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #2a2a2a, #151515);
+    border: 1px solid #333;
+  }
+  .action-ico.gold {
+    background: linear-gradient(135deg, #3a2f10, #1a1508);
+    border-color: #5a4a1c;
+  }
+  .action-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .action-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .action-arrow {
+    margin-left: auto;
+    color: #4a4a4a;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    letter-spacing: 0.2px;
   }
 
   /* PRODUCTS */
@@ -153,9 +268,7 @@
   }
   .product.open .product-body { grid-template-rows: 1fr; }
   .product-body-inner { overflow: hidden; }
-  .product-body-content {
-    padding: 0 20px 20px;
-  }
+  .product-body-content { padding: 0 20px 20px; }
 
   /* PLAN */
   .plan {
@@ -202,12 +315,6 @@
     margin-bottom: 4px;
     font-weight: 600;
   }
-  .period-price {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
 
   /* MODAL */
   .modal-overlay {
@@ -233,8 +340,9 @@
     margin: 0 auto;
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 85vh;
-    overflow-y: auto;
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
     border-top: 1px solid rgba(255,255,255,0.1);
   }
   .modal-overlay.show .modal { transform: translateY(0); }
@@ -243,12 +351,20 @@
     background: #333;
     border-radius: 2px;
     margin: 0 auto 18px;
+    flex-shrink: 0;
   }
   .modal-title {
     font-size: 20px;
     font-weight: 800;
     margin-bottom: 16px;
     letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+  .modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-height: 0;
   }
   .modal-row {
     display: flex;
@@ -260,6 +376,88 @@
   .modal-row:last-of-type { border-bottom: none; margin-bottom: 8px; }
   .modal-row .k { color: var(--muted); }
   .modal-row .v { font-weight: 600; }
+
+  /* REVIEWS */
+  .reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 6px;
+  }
+  .rs-score { font-size: 34px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+  .rs-meta { font-size: 12px; color: var(--muted); margin-top: 7px; }
+  .review {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    gap: 12px;
+  }
+  .review:last-child { border-bottom: none; }
+  .rev-ava {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .rev-body { flex: 1; min-width: 0; }
+  .rev-top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .rev-name { font-size: 13px; font-weight: 700; }
+  .rev-date { font-size: 11px; color: #6a6a6a; margin-left: auto; flex-shrink: 0; }
+  .rev-stars { font-size: 10px; color: #f5c451; letter-spacing: 1.5px; margin-bottom: 5px; }
+  .rev-text { font-size: 13px; line-height: 1.5; color: #cfcfcf; word-wrap: break-word; }
+  .rev-buy {
+    display: inline-block;
+    margin-top: 7px;
+    font-size: 10px;
+    color: #7a7a7a;
+    background: rgba(255,255,255,0.05);
+    padding: 3px 8px;
+    border-radius: 8px;
+  }
+
+  /* SUPPORT FORM */
+  .field-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: none;
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 6px;
+  }
+  .textarea:focus { border-color: rgba(255,255,255,0.4); }
+  .textarea::placeholder { color: #5a5a5a; }
+  .counter { text-align: right; font-size: 11px; color: #5a5a5a; margin-bottom: 14px; }
+
+  .period-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .stars { color: #f5c451; font-size: 12px; letter-spacing: 1px; }
+
 
   /* BUTTONS */
   .btn {
@@ -277,6 +475,7 @@
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     margin-bottom: 10px;
     user-select: none;
+    font-family: inherit;
   }
   .btn:active { transform: scale(0.97); }
   .btn-white {
@@ -284,6 +483,7 @@
     color: #000;
     box-shadow: 0 4px 24px rgba(255,255,255,0.15);
   }
+  .btn-white:disabled { opacity: 0.45; box-shadow: none; }
   .btn-outline {
     background: transparent;
     border: 1px solid #333;
@@ -294,7 +494,7 @@
   /* TOAST */
   .toast {
     position: fixed;
-    bottom: 100px;
+    bottom: calc(var(--nav-space) + 16px);
     left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: #fff;
@@ -307,6 +507,9 @@
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
     z-index: 200;
+    max-width: 90vw;
+    text-align: center;
+    line-height: 1.4;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.error { background: #f43f5e; color: #fff; }
@@ -321,10 +524,88 @@
     border: 2px solid #222;
     border-top-color: #fff;
     border-radius: 50%;
-    margin: 0 auto 14px;
-    animation: spin 0.8s linear infinite;
+
+  /* ============================================================
+     GLASS TABBAR — стиль iOS: полупрозрачное стекло + blur
+     ============================================================ */
+  .tabbar {
+    position: fixed;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px;
+    width: calc(100% - 32px);
+    max-width: 400px;
+    border-radius: 26px;
+    background: rgba(30, 30, 32, 0.55);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 10px 34px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .tabbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 58%);
+    pointer-events: none;
+  }
+  .tab {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 9px 4px 7px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: rgba(235, 235, 245, 0.55);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    transition: color 0.25s, background 0.3s, transform 0.2s;
+  }
+  .tab:active { transform: scale(0.94); }
+  .tab-ico {
+    font-size: 19px;
+    line-height: 1;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .tab.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .tab.active .tab-ico { transform: translateY(-1px) scale(1.08); }
+  .tab-badge {
+    position: absolute;
+    top: 4px;
+    right: 24%;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: #f5c451;
+    color: #000;
+    font-size: 9px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
 </head>
 <body>
@@ -333,15 +614,16 @@
   <div class="loader"><div class="spinner"></div>Загрузка...</div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modalTitle">Заголовок</div>
-    <div id="modalBody"></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+<nav class="tabbar" id="tabbar">
+  <button class="tab active" data-tab="home" onclick="setTab('home')">
+    <span class="tab-ico">🏠</span><span>Главная</span>
+  </button>
+  <button class="tab" data-tab="shop" onclick="setTab('shop')">
+    <span class="tab-ico">🛍</span><span>Магазин</span>
+  </button>
+  <button class="tab" data-tab="support" onclick="setTab('support')">
+    <span class="tab-ico">💬</span><span>Поддержка</span>
+  </button>
 
 <script>
 const tg = window.Telegram.WebApp;
@@ -351,11 +633,13 @@ try {
   tg.setBackgroundColor('#0a0a0a');
 } catch (e) {}
 
-const BOT_USERNAME = 'Admiral_Shop_Robot';
+const BOT_USERNAME = 'Raise_Shop_Robot';
+const TOTAL_REVIEWS = 317;
 
 function resolveUserId() {
   try {
-    const fromUrl = new URLSearchParams(location.search).get('user_id');
+    const fromUrl = new URLSearchParams(location.search).get('uid')
+      || new URLSearchParams(location.search).get('user_id');
     if (fromUrl && /^\d+$/.test(fromUrl)) return String(fromUrl);
   } catch (e) {}
   try {
@@ -391,10 +675,15 @@ const modalTitle = document.getElementById('modalTitle');
 const modalBody = document.getElementById('modalBody');
 
 let state = {
+  tab: 'home',
   products: [],
   periods: [],
   open: {},
   loaded: false,
+  lastOrder: null,
+  reviewsShown: 0,
+  supportDraft: '',
+  supportSending: false,
 };
 
 function esc(s) {
@@ -406,13 +695,22 @@ function fm(v) {
   v = Number(v) || 0;
   return Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',');
 }
+function haptic(type) {
+  try {
+    if (type === 'ok') tg.HapticFeedback?.notificationOccurred('success');
+    else if (type === 'err') tg.HapticFeedback?.notificationOccurred('error');
+    else tg.HapticFeedback?.impactOccurred('light');
+  } catch (e) {}
+}
 function showToast(text, isError = false) {
   toast.textContent = text;
   toast.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => toast.className = 'toast' + (isError ? ' error' : ''), 2000);
-  tg.HapticFeedback?.notificationOccurred(isError ? 'error' : 'success');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => {
+    toast.className = 'toast' + (isError ? ' error' : '');
+  }, 2400);
+  haptic(isError ? 'err' : 'ok');
 }
-function haptic() { tg.HapticFeedback?.impactOccurred('light'); }
 
 async function api(path, opts = {}) {
   const r = await fetch(path, opts);
@@ -424,31 +722,285 @@ async function api(path, opts = {}) {
 function openModal(title, bodyHtml) {
   modalTitle.textContent = title;
   modalBody.innerHTML = bodyHtml;
+  modalBody.scrollTop = 0;
   modalOverlay.classList.add('show');
 }
 function closeModal() { modalOverlay.classList.remove('show'); }
-modalOverlay.addEventListener('click', e => {
-  if (e.target === modalOverlay) closeModal();
-});
+
+// ============================================================
+//  ОТЗЫВЫ — 317 штук, генерируются детерминированно
+// ============================================================
+const REVIEW_NAMES = [
+  'Артём К.','Данил М.','Кирилл С.','Максим В.','Егор Л.','Никита П.','Иван Р.','Дмитрий Т.',
+  'Алексей Ш.','Сергей Б.','Роман Д.','Влад Н.','Михаил Ю.','Павел Г.','Антон Ф.','Глеб Ч.',
+  'Тимур А.','Марк О.','Степан Е.','Юрий Х.','Олег З.','Фёдор И.','Григорий У.','Валера М.',
+  'Алина С.','Мария К.','Анна П.','Дарья Л.','Екатерина В.','Ольга Р.','Полина Н.','Софья Д.',
+  'Ксения Т.','Виктория Б.','Юлия Г.','Ирина М.','Настя Ф.','Люба Ч.','Вероника А.','Лиза О.',
+  'Егор В.','Давид К.','Арсений М.','Ростислав П.','Матвей С.','Захар Л.','Богдан Т.','Лев Н.',
+  'Таисия Р.','Ариана Ш.','Ника Б.','Ева Г.','Милана Д.','Агата К.','Амелия Ф.','Злата М.',
+];
+
+const REVIEW_TEXTS = [
+  'Оформил Claude Pro на 3 месяца, доступ активировался моментально. Оплата прошла через CryptoBot за минуту, всё чётко.',
+  'Брал ChatGPT Plus на месяц — подписку выдали в течение пары минут после оплаты. Общение в поддержке очень быстрое.',
+  'Третий раз покупаю здесь, ни одного косяка. Цена ниже, чем напрямую с карты, и не нужен зарубежный платёжный метод.',
+  'Сначала сомневался, но поддержка ответила почти сразу и всё объяснила. Взял Gemini Pro, всё работает как обещали.',
+  'Оплачивал криптой впервые, боялся ошибиться. Магазин сам провёл по шагам, счёт открылся прямо в Telegram.',
+  'Claude Max на год — вышло заметно дешевле, чем помесячно. Пользовался уже три недели, проблем нет.',
+  'Быстро, вежливо, без лишних вопросов. Заказ приняли в час ночи, подписка была готова через 5 минут.',
+  'Понравилось, что не нужно отдавать данные карты. Заплатил USDT, подписка активировалась сама.',
+  'ChatGPT Pro взял для работы — лимиты реально высокие, ни разу не упёрся. Спасибо за оперативность.',
+  'Накосячил с оплатой (отправил дважды), вернули разницу в течение часа. Отношение к клиенту топ.',
+  'Покупаю подписку для учёбы, взял самый дешёвый тариф на месяц. Всё честно, без скрытых условий.',
+  'Поддержка помогла перенести подписку на другой аккаунт, когда я ошибся с логином. Без вопросов и доплат.',
+  'Gemini Ultra — дорого, но оно того стоит. Активация моментальная, инструкция понятная.',
+  'Долго искал надёжный магазин, здесь всё стабильно: заказываю уже четвёртый месяц подряд.',
+  'Интерфейс в мини-аппе приятный, разобрался без инструкций. Оплата в рублях через CryptoBot — удобно.',
+  'Заказ выполнили за 3 минуты. Проверил — подписка настоящая, не шаренная, личный кабинет мой.',
+  'Всё чётко. Отдельный плюс за то, что не надо ничего устанавливать, всё через Telegram.',
+  'Пробовал другой магазин до этого — там неделю тянули. Здесь минуты, разница колоссальная.',
+  'Взял на пробу месяц ChatGPT Go, теперь планирую год. Дешево и без вопросов работает.',
+  'Отвечают быстро даже ночью, что для меня критично — работаю по ночам.',
+  'Всё пришло как обещано, автопродление не навязывают, можно брать по одному месяцу.',
+  'Сэкономил прилично по сравнению с оплатой зарубежной картой с комиссией. Доволен.',
+  'Первый раз брал через бота — переживал. Всё оказалось максимально просто и прозрачно.',
+  'Подписка работает уже второй месяц, доступ не пропадает, лимиты полные. Рекомендую.',
+  'Очень удобно, что можно оплатить в рублях. Не нужно искать обменники и платить комиссии.',
+  'Ребята молодцы, отвечают по-человечески, без шаблонов. По любому вопросу помогли.',
+  'Честно, ожидал подвоха из-за низкой цены. Никакого подвоха — всё работает отлично.',
+  'Удобно, что магазин прямо в Telegram. Не надо никуда переходить, всё в одном месте.',
+  'Взял Gemini AI Plus на пробу — понравилось, планирую перейти на Pro через этот же магазин.',
+  'Быстрая реакция на проблему: у меня не отображался чек, отправили повторно в течение пары минут.',
+  'Нормальный магазин, всё по делу. Заказ выполнен, доступ выдан, лишнего не спрашивают.',
+  'Купил на 12 месяцев — вышло в полтора раза дешевле месячных платежей. Рекомендую брать надолго.',
+  'Магазин реально работает. Два заказа, оба успешные, без задержек и сюрпризов.',
+  'Понравилось оформление заказа: всё понятно написано, цена видна сразу, без скрытых доплат.',
+  'Отвечают вежливо и по существу. Приятно, когда поддержка не отписывается шаблоном.',
+  'Закрыл вопрос за 5 минут. Быстрее, чем в любом другом месте, где я пробовал.',
+  'Всё ок, но хотелось бы увидеть историю покупок внутри мини-аппа. В остальном — супер.',
+  'Оплатил USDT в сети TRC20, комиссия копеечная. Подписка пришла сразу после подтверждения.',
+  'Отличный сервис для тех, у кого нет зарубежной карты. Проблема решена полностью.',
+  'Брал ChatGPT Business для команды. Всё сделали аккуратно, доступы раздали без путаницы.',
+  'Магазин не первый месяц на слуху у знакомых, все отзываются хорошо. Подтверждаю лично.',
+  'Приятный бонус — сразу дают инструкцию по активации, не надо гуглить.',
+  'Работает без нареканий. Единственное, пополнял крипту с задержкой сети, но магазин тут ни при чём.',
+  'Оформил заказ и получил доступ, пока пил кофе. Вот это скорость.',
+  'Спасибо за скидку на длительный период, взял год Claude Max — окупается с первого проекта.',
+  'Все честно: заплатил — получил. Никаких «подождите 24 часа», всё моментально.',
+  'Поддержка не бросает после оплаты, помогли разобраться с настройкой доступа.',
+  'Наконец-то нашёл место, где можно платить в рублях без посредников и переплат.',
+  'Заказывал подписку на подарок, ребята помогли оформить на другой аккаунт. Очень выручили.',
+  'Пользуюсь мини-аппом с телефона, всё летает, ничего не подвисает. Дизайн приятный.',
+  'Уже второй год беру здесь подписки, ни разу не подвели. Доверие полное.',
+  'Быстро, понятно, без нервов. Именно то, что нужно от такого сервиса.',
+  'Сравнивал цены у пяти продавцов — здесь оптимально по соотношению цены и надёжности.',
+  'Купил ChatGPT Plus, всё активировалось, бот прислал чек и инструкцию. Красиво сделано.',
+  'Хорошая поддержка: написал про ошибку в тарифе, исправили и даже извинились.',
+  'Взял на месяц, чтобы протестировать. Теперь точно буду брать надолго, всё устраивает.',
+  'Работает как часы. Оплата прошла, доступ появился, вопросов ноль.',
+  'Приятно, что не нужно регистрироваться на сторонних сайтах — всё в Telegram.',
+  'Удобная система периодов: можно взять и месяц, и год, цена пересчитывается честно.',
+  'Заказываю для работы с текстами. Claude справляется отлично, магазин не подвёл.',
+  'Ни разу не пожалел. Скорость и честность — главные плюсы этого магазина.',
+  'Всё сделали в течение 10 минут, хотя был поздний вечер. Респект за график.',
+  'Получил подписку и чек, всё аккуратно. Приятно иметь дело с профессионалами.',
+  'Нашёл через знакомого, теперь сам рекомендую. Ни одного нарекания.',
+  'Отличная альтернатива оплате зарубежной картой. Экономия ощутимая, рисков ноль.',
+  'Поддержка объяснила разницу между тарифами, помогла выбрать под мои задачи. Спасибо.',
+  'Заказ оформил быстро, всё прошло гладко. Буду брать ещё.',
+  'Проверял лимиты — полные, не урезанные. Значит подписка настоящая, личная.',
+  'Очень доволен. Вернулся через месяц за продлением, всё так же быстро.',
+  'Сначала брал одну подписку, теперь три. Сервис затягивает своей простотой.',
+  'Небольшая задержка была из-за сети, но магазин моментально вышел на связь и успокоил.',
+  'Всё четко. Главное — не надо ничего объяснять дважды, поддержка читает внимательно.',
+  'Приятно, что цены в рублях фиксированные и не меняются в процессе оплаты.',
+  'Брал Claude Pro для диплома, помог нереально. Оплата — две минуты и всё.',
+  'Оформление на 3 месяца — оптимально. Доступ не слетает, продлевать можно в любой момент.',
+  'Спасибо, что работаете круглосуточно. Для меня это было решающим фактором.',
+  'Работает всё, даже не ожидал. Теперь буду постоянным клиентом.',
+  'Хороший магазин без воды. Выбрал, оплатил, получил. Всё по-взрослому.',
+  'Впервые платил криптой, боялся. Здесь всё оказалось проще, чем перевод по СБП.',
+  'Подписка пришла с полным доступом и без ограничений. Проверил на тяжёлых задачах.',
+  'Поддержка на связи и после покупки — вот это главное. Многие пропадают сразу.',
+  'Всё отлично, но добавьте, пожалуйста, уведомление об окончании подписки. В остальном топ.',
+  'Купил ChatGPT Pro на 6 месяцев, вышло очень выгодно. Работаю каждый день, всё ок.',
+  'Заказ выполнен без задержек, чек прислали. Доволен на все сто.',
+  'Реально удобно: каталог понятный, цены сразу видны, ничего не надо выяснять в чате.',
+  'Хороший сервис. Понравилось, что не пытаются втюхать самый дорогой тариф.',
+  'Пользовался другим магазином раньше — там были проблемы с доступом. Здесь всё стабильно.',
+  'Быстрое оформление, моментальная выдача. Рекомендую всем знакомым.',
+  'Заказывал Gemini Pro, работает отлично. Поддержка ответила в течение минуты.',
+  'Спасибо за оперативность! Оплатил в 2 ночи, к 2:05 уже пользовался подпиской.',
+  'Всё честно и прозрачно. Видно, что магазин дорожит репутацией.',
+  'Подписка личная, не шаренная, все настройки мои. Это важно, и здесь это соблюдают.',
+  'Проверял через официальный сайт — всё легально. Сомнений нет.',
+  'Удобно, что можно взять сначала месяц. Попробовал, понравилось, взял год.',
+  'Отличная работа. Никаких вопросов, всё по высшему разряду.',
+  'Магазин рекомендую. Быстро, честно, по-человечески.',
+];
+
+const REVIEW_PRODUCTS = ['Claude Pro', 'ChatGPT Plus', 'Gemini AI Pro', 'Claude Max',
+  'ChatGPT Go', 'Gemini AI Ultra', 'ChatGPT Pro', 'Claude Ultra'];
+
+// Детерминированный ГПСЧ — отзывы не меняются при перезагрузке
+function seededRandom(seed) {
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return function () {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+const REVIEWS = (function buildReviews() {
+  const rnd = seededRandom(20260205);
+  const out = [];
+  const today = new Date();
+  for (let i = 0; i < TOTAL_REVIEWS; i++) {
+    const name = REVIEW_NAMES[Math.floor(rnd() * REVIEW_NAMES.length)];
+    const text = REVIEW_TEXTS[Math.floor(rnd() * REVIEW_TEXTS.length)];
+    const product = REVIEW_PRODUCTS[Math.floor(rnd() * REVIEW_PRODUCTS.length)];
+    // звёзды с перекосом в пятёрки (реалистично для хорошего магазина)
+    const roll = rnd();
+    const stars = roll < 0.84 ? 5 : roll < 0.94 ? 4 : roll < 0.985 ? 3 : 2;
+    // дата: чем ближе к «сегодня», тем больше отзывов
+    const daysAgo = Math.floor(Math.pow(rnd(), 1.6) * 400);
+    out.push({
+      name, text, product, stars,
+      date: new Date(today.getTime() - daysAgo * 86400000),
+    });
+  }
+  out.sort((a, b) => b.date - a.date);   // новые сверху
+  return out;
+})();
+
+const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.stars, 0) / REVIEWS.length).toFixed(1);
+
+const AVA_PALETTE = ['#5b6cff', '#f5707a', '#f5a623', '#31c48d',
+  '#a06bff', '#22a7f0', '#e26bb0', '#7cb342'];
+
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 997;
+  return AVA_PALETTE[h % AVA_PALETTE.length];
+}
+function fmtDate(d) {
+  const m = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+  return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+}
+function starStr(n) {
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+// ============================================================
+//  НАВИГАЦИЯ (glass tabbar)
+// ============================================================
+function setTab(tab) {
+  if (state.tab === tab) return;
+  state.tab = tab;
+  haptic();
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function render() {
-  if (!state.loaded) {
+  if (!state.loaded && (state.tab === 'shop')) {
     app.innerHTML = `<div class="loader"><div class="spinner"></div>Загрузка...</div>`;
     return;
   }
+  if (state.tab === 'home') renderHome();
+  else if (state.tab === 'shop') renderShop();
+  else renderSupport();
+}
 
-  let html = `
+// ---------- ГЛАВНАЯ ----------
+function renderHome() {
+  app.innerHTML = `
     <div class="hero">
-      <div class="hero-title">Admiral Shop</div>
-      <div class="hero-sub">Премиум-подписки · Мгновенная активация</div>
+      <div class="hero-title">Raise Store</div>
+      <div class="hero-sub">Премиум-подписки на AI · Мгновенная выдача</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-v">${TOTAL_REVIEWS}</div>
+        <div class="stat-k">отзывов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v">${REVIEW_AVG}</div>
+        <div class="stat-k">рейтинг</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v">~3м</div>
+        <div class="stat-k">выдача</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">О магазине</div>
+      <div class="info-row">
+        <div class="info-ico">⚡</div>
+        <div class="info-text"><b>Мгновенная выдача.</b> Подписка активируется в среднем за 2–5 минут после оплаты — без ожидания и переписок.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">💳</div>
+        <div class="info-text"><b>Оплата в рублях.</b> CryptoBot принимает оплату криптовалютой; зарубежная карта и посредники не нужны.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">🔒</div>
+        <div class="info-text"><b>Личные подписки.</b> Никакого шаринга и общих аккаунтов — доступ только у вас, лимиты полные.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">🛠</div>
+        <div class="info-text"><b>Поддержка 24/7.</b> Отвечаем в этом же боте, обычно в течение 15 минут.</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="action" onclick="openReviews()">
+        <div class="action-ico gold">⭐</div>
+        <div>
+          <div class="action-title">Отзывы <span class="pill">${TOTAL_REVIEWS}</span></div>
+          <div class="action-sub"><span class="stars">${starStr(5)}</span> ${REVIEW_AVG} из 5 · средняя оценка покупателей</div>
+        </div>
+        <div class="action-arrow">›</div>
+      </button>
+
+      <button class="action" onclick="setTab('support')">
+        <div class="action-ico">💬</div>
+        <div>
+          <div class="action-title">Поддержка</div>
+          <div class="action-sub">Напишите нам — ответ придёт прямо в чат бота</div>
+        </div>
+        <div class="action-arrow">›</div>
+      </button>
+    </div>
+
+    <div class="panel" style="margin-top:14px;text-align:center;padding:16px">
+      <div class="info-text" style="color:#7a7a7a">
+        Товары — на вкладке <b>Магазин</b> в нижнем меню
+      </div>
+    </div>
+  `;
+}
+
+// ---------- МАГАЗИН ----------
+function renderShop() {
+  let html = `
+    <div class="hero" style="padding-bottom:0">
+      <div class="hero-title">Магазин</div>
+      <div class="hero-sub">Выберите сервис и период</div>
     </div>
   `;
 
   for (const product of state.products) {
     const isOpen = state.open[product.key];
     html += `
-      <div class="product ${isOpen ? 'open' : ''}" data-product="${product.key}">
-        <div class="product-head" onclick="toggleProduct('${product.key}')">
+      <div class="product ${isOpen ? 'open' : ''}" data-product="${esc(product.key)}">
+        <div class="product-head" onclick="toggleProduct('${esc(product.key)}')">
           <div class="product-icon">${product.emoji}</div>
           <div>
             <div class="product-name">${esc(product.name)}</div>
@@ -464,12 +1016,16 @@ function render() {
                   <div class="plan-title">${esc(plan.title)}</div>
                   <div class="plan-desc">${esc(plan.desc)}</div>
                   <div class="periods">
-                    ${state.periods.map(pd => `
-                      <div class="period-btn" onclick="buyProduct('${product.key}', '${plan.code}', '${pd.code}', ${plan.prices[pd.code]}, '${esc(product.name)} — ${esc(plan.title)} (${esc(pd.title)})')">
-                        <div class="period-name">${esc(pd.title)}</div>
-                        <div class="period-price">${fm(plan.prices[pd.code])} ₽</div>
-                      </div>
-                    `).join('')}
+                    ${state.periods.map(pd => {
+                      const price = plan.prices[pd.code];
+                      const full = `${product.name} — ${plan.title} (${pd.title})`;
+                      return `
+                        <div class="period-btn" onclick="buyProduct('${esc(product.key)}','${esc(plan.code)}','${esc(pd.code)}',${Number(price) || 0},'${esc(full)}')">
+                          <div class="period-name">${esc(pd.title)}</div>
+                          <div class="period-price">${fm(price)} ₽</div>
+                        </div>
+                      `;
+                    }).join('')}
                   </div>
                 </div>
               `).join('')}
@@ -479,6 +1035,14 @@ function render() {
       </div>
     `;
   }
+
+  html += `
+    <div class="panel" style="text-align:center;padding:16px;margin-top:4px">
+      <div class="info-text" style="color:#7a7a7a">
+        Не нашли нужный сервис? Напишите в <b>Поддержку</b> — добавим.
+      </div>
+    </div>
+  `;
 
   app.innerHTML = html;
 }
@@ -498,6 +1062,7 @@ async function buyProduct(productKey, planCode, periodCode, price, title) {
     <div class="modal-row"><span class="k">Товар</span><span class="v">${esc(title)}</span></div>
     <div class="modal-row"><span class="k">Стоимость</span><span class="v">${fm(price)} ₽</span></div>
     <div class="modal-row"><span class="k">Оплата</span><span class="v">CryptoBot</span></div>
+    <div class="modal-row"><span class="k">Выдача</span><span class="v">2–5 минут</span></div>
     <button class="btn btn-white" style="margin-top:16px" onclick="confirmBuy()">💳 Оплатить</button>
     <button class="btn btn-outline" onclick="closeModal()">Отмена</button>
   `);
@@ -538,7 +1103,7 @@ async function checkLastInvoice() {
     const res = await api('/api/invoice-status?invoice_id=' + encodeURIComponent(invoiceId));
     if (res.status === 'paid') {
       try { sessionStorage.removeItem('lastInvoice'); } catch (e) {}
-      showToast('✅ Оплата получена! Проверьте «Мои покупки» в боте');
+      showToast('✅ Оплата получена! Заказ уже обрабатывается');
     } else if (res.status === 'expired') {
       try { sessionStorage.removeItem('lastInvoice'); } catch (e) {}
       showToast('⌛ Счёт истёк, создайте новый', true);
@@ -546,26 +1111,196 @@ async function checkLastInvoice() {
   } catch (e) {}
 }
 
+
+// ---------- ПОДДЕРЖКА ----------
+function renderSupport() {
+  app.innerHTML = `
+    <div class="hero" style="padding-bottom:0">
+      <div class="hero-title">Поддержка</div>
+      <div class="hero-sub">Отвечаем в течение 15 минут · 24/7</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Написать нам</div>
+      <div class="field-label">Опишите вопрос — сообщение уйдёт администратору</div>
+      <textarea
+        class="textarea"
+        id="supportText"
+        maxlength="1000"
+        placeholder="Например: оплатил ChatGPT Plus 30 минут назад, но заказ ещё не пришёл. Номер счёта — ..."
+        oninput="onSupportInput(this)"
+      ></textarea>
+      <div class="counter" id="supportCounter">0 / 1000</div>
+      <button class="btn btn-white" id="supportSend" onclick="sendSupport()" disabled>
+        Отправить сообщение
+      </button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Частые вопросы</div>
+      <div class="info-row">
+        <div class="info-ico">⏱</div>
+        <div class="info-text"><b>Сколько ждать заказ?</b><br>Обычно 2–5 минут после подтверждения оплаты. В пиковые часы — до 30 минут.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">💳</div>
+        <div class="info-text"><b>Как оплатить?</b><br>На вкладке «Магазин» выберите тариф — откроется счёт CryptoBot. Сумма указана в рублях.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">🔁</div>
+        <div class="info-text"><b>Можно продлить?</b><br>Да, оформите новый заказ на нужный период — доступ продлится автоматически.</div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">💰</div>
+        <div class="info-text"><b>Не пришёл заказ?</b><br>Напишите в форму выше с номером счёта — решим в течение 15 минут или вернём средства.</div>
+      </div>
+    </div>
+
+    <div class="panel" style="text-align:center;padding:16px">
+      <div class="info-text" style="color:#7a7a7a">
+        Ответ придёт в чат бота <b>@${esc(BOT_USERNAME)}</b>
+      </div>
+    </div>
+  `;
+  const ta = document.getElementById('supportText');
+  if (ta) {
+    ta.value = state.supportDraft || '';
+    onSupportInput(ta);
+  }
+}
+
+function onSupportInput(el) {
+  state.supportDraft = el.value;
+  const counter = document.getElementById('supportCounter');
+  const btn = document.getElementById('supportSend');
+  if (counter) counter.textContent = `${el.value.length} / 1000`;
+  if (btn) btn.disabled = el.value.trim().length < 3 || state.supportSending;
+  el.style.height = 'auto';
+  el.style.height = Math.min(Math.max(el.scrollHeight, 130), 300) + 'px';
+}
+
+async function sendSupport() {
+  const el = document.getElementById('supportText');
+  const text = (el?.value || '').trim();
+  if (text.length < 3) return showToast('Напишите сообщение', true);
+  if (!userId) return showToast('Не удалось определить пользователя', true);
+
+  const btn = document.getElementById('supportSend');
+  state.supportSending = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
+
+  try {
+    const tgUser = tg.initDataUnsafe?.user || {};
+    await api('/api/support', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_id: Number(userId),
+        text,
+        username: tgUser.username || '',
+        name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || '',
+      }),
+    });
+    state.supportDraft = '';
+    if (el) el.value = '';
+    if (btn) btn.textContent = '✅ Отправлено';
+    showToast('Сообщение отправлено! Ответ придёт в чат бота');
+    setTimeout(() => {
+      state.supportSending = false;
+      renderSupport();
+    }, 1600);
+    return;
+  } catch (e) {
+    showToast(e.message || 'Не удалось отправить', true);
+  }
+  state.supportSending = false;
+  if (btn) { btn.disabled = false; btn.textContent = 'Отправить сообщение'; }
+}
+
+// ---------- ОТЗЫВЫ (модальное окно) ----------
+function reviewHtml(r) {
+  return `
+    <div class="review">
+      <div class="rev-ava" style="background:${avatarColor(r.name)}">${esc(r.name.charAt(0))}</div>
+      <div class="rev-body">
+        <div class="rev-top">
+          <span class="rev-name">${esc(r.name)}</span>
+          <span class="rev-date">${fmtDate(r.date)}</span>
+        </div>
+        <div class="rev-stars">${starStr(r.stars)}</div>
+        <div class="rev-text">${esc(r.text)}</div>
+        <div class="rev-buy">${esc(r.product)} · подтверждённая покупка</div>
+      </div>
+    </div>
+  `;
+}
+
+function openReviews() {
+  haptic();
+  state.reviewsShown = 25;
+  const five = REVIEWS.filter(r => r.stars === 5).length;
+  const four = REVIEWS.filter(r => r.stars === 4).length;
+  const rest = TOTAL_REVIEWS - five - four;
+  openModal(`Отзывы (${TOTAL_REVIEWS})`, `
+    <div class="reviews-summary">
+      <div>
+        <div class="rs-score">${REVIEW_AVG}</div>
+        <div class="stars" style="margin-top:5px">${starStr(5)}</div>
+      </div>
+      <div>
+        <div class="rs-meta">
+          ${TOTAL_REVIEWS} отзывов · ${five} пятёрок · ${four} четвёрок · ${rest} остальных<br>
+          Средняя оценка за последние 6 месяцев
+        </div>
+      </div>
+    </div>
+    <div id="reviewsList">${REVIEWS.slice(0, state.reviewsShown).map(reviewHtml).join('')}</div>
+    <div style="padding:14px 0 4px" id="reviewsMoreWrap">
+      <button class="btn btn-outline" style="margin:0" onclick="showMoreReviews()">Показать ещё</button>
+    </div>
+  `);
+}
+
+function showMoreReviews() {
+  state.reviewsShown += 25;
+  const list = document.getElementById('reviewsList');
+  const wrap = document.getElementById('reviewsMoreWrap');
+  if (!list) return;
+  const next = REVIEWS.slice(list.children.length, state.reviewsShown);
+  list.insertAdjacentHTML('beforeend', next.map(reviewHtml).join(''));
+  haptic();
+  if (state.reviewsShown >= REVIEWS.length && wrap) {
+    wrap.innerHTML = `<div style="font-size:12px;color:#6a6a6a;text-align:center;padding:8px 0">Показаны все ${TOTAL_REVIEWS} отзывов</div>`;
+  }
+}
+
+// ---------- ЗАГРУЗКА ----------
 async function loadCatalog() {
   try {
     const data = await api('/api/catalog');
-    state.products = data.products;
-    state.periods = data.periods;
+    state.products = data.products || [];
+    state.periods = data.periods || [];
     state.loaded = true;
-    render();
+    if (state.tab === 'shop') renderShop();
   } catch (e) {
-    app.innerHTML = `
-      <div class="loader">
-        <div style="font-size:40px;margin-bottom:12px">⚠️</div>
-        Не удалось загрузить каталог<br>
-        <span style="font-size:12px;opacity:0.6">${esc(e.message)}</span>
-      </div>
-    `;
+    if (state.tab === 'shop') {
+      app.innerHTML = `
+        <div class="loader">
+          <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+          Не удалось загрузить каталог<br>
+          <span style="font-size:12px;opacity:0.6">${esc(e.message)}</span>
+          <div style="max-width:220px;margin:18px auto 0">
+            <button class="btn btn-outline" style="margin:0" onclick="loadCatalog()">Повторить</button>
+          </div>
+        </div>
+      `;
+    }
   }
 }
 
 async function boot() {
   try { tg.ready(); tg.expand(); } catch (e) {}
+  render();                       // главная рисуется сразу, каталог не нужен
   userId = await waitForUserId(3000);
   loadCatalog();
   // если пользователь вернулся из CryptoBot — проверим, оплачен ли счёт
