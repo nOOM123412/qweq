@@ -165,13 +165,22 @@ async def photo_file() -> Optional[FSInputFile]:
 
 
 async def send_photo_msg(target: Message, text: str, kb=None):
+    """Отправляет приветствие с фото, при любой проблеме — обычным текстом.
+
+    ВАЖНО: ошибки не пробрасываются наверх, иначе хендлер падает и
+    пользователь не получает ответ вовсе.
+    """
     photo = await photo_file()
     if photo is not None:
         try:
             return await target.answer_photo(photo=photo, caption=text, reply_markup=kb)
-        except Exception:
-            log.exception("не удалось отправить фото, отправляю текст")
-    return await target.answer(text, reply_markup=kb, disable_web_page_preview=True)
+        except Exception as e:
+            log.warning("фото не отправлено (%s), отправляю текст", e)
+    try:
+        return await target.answer(text, reply_markup=kb, disable_web_page_preview=True)
+    except Exception as e:
+        log.warning("текст с разметкой не отправлен (%s), отправляю простой текст", e)
+        return await target.answer(text, reply_markup=kb)
 
 
 # ============================================================
@@ -400,6 +409,20 @@ async def run_webserver() -> None:
 # ============================================================
 #  БОТ
 # ============================================================
+def webapp_url(user_id: int = 0) -> str:
+    """Публичный HTTPS-адрес мини-аппа.
+
+    Mini App в Telegram открывается только по HTTPS, поэтому при локальном
+    запуске без DOMAIN отдаём заглушку (кнопка всё равно будет видна, но
+    Telegram её не откроет — это ожидаемо для разработки).
+    """
+    base = DOMAIN.rstrip("/") if DOMAIN else "https://example.com"
+    url = f"{base}/"
+    if user_id:
+        url += f"?uid={user_id}"
+    return url
+
+
 def kb_open_app(user_id: int = 0) -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(text="🚀 Открыть магазин", web_app=WebAppInfo(url=webapp_url(user_id)))],
