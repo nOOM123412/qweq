@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Admiral Shop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #141414;
+    --card: #181818;
+    --card-2: #1f1f1f;
+    --border: #2a2a2a;
+    --text: #f5f5f5;
+    --muted: #8a8a8a;
+    --accent: #ffffff;
+    --radius: 20px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 800px 400px at 50% -10%, rgba(255,255,255,0.08), transparent 60%),
+      radial-gradient(ellipse 600px 300px at 100% 100%, rgba(255,255,255,0.04), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 16px;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    margin-bottom: 28px;
+    padding: 20px 0;
+  }
+  .hero-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(180deg, #ffffff 0%, #9a9a9a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  /* PRODUCTS */
+  .product {
+    background: linear-gradient(160deg, var(--card-2) 0%, var(--card) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .product:nth-child(1) { animation-delay: 0.05s; }
+  .product:nth-child(2) { animation-delay: 0.10s; }
+  .product:nth-child(3) { animation-delay: 0.15s; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  .product.open {
+    border-color: rgba(255,255,255,0.25);
+    box-shadow: 0 12px 40px rgba(255,255,255,0.06);
+  }
+  .product-head {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .product-head:active { background: rgba(255,255,255,0.03); }
+  .product-icon {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2a2a2a, #151515);
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .product.open .product-icon { transform: scale(1.1) rotate(-5deg); }
+  .product-name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    margin-bottom: 3px;
+  }
+  .product-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .product-arrow {
+    margin-left: auto;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 10px;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+  .product.open .product-arrow {
+    transform: rotate(180deg);
+    background: #ffffff;
+    color: #000;
+  }
+  .product-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .product.open .product-body { grid-template-rows: 1fr; }
+  .product-body-inner { overflow: hidden; }
+  .product-body-content {
+    padding: 0 20px 20px;
+  }
+
+  /* PLAN */
+  .plan {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .plan-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .plan-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .periods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .period-btn {
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+  }
+  .period-btn:active {
+    transform: scale(0.96);
+    border-color: #fff;
+    background: #1a1a1a;
+  }
+  .period-name {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .period-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 85vh;
+    overflow-y: auto;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: #333;
+    border-radius: 2px;
+    margin: 0 auto 18px;
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+  .modal-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .modal-row:last-of-type { border-bottom: none; margin-bottom: 8px; }
+  .modal-row .k { color: var(--muted); }
+  .modal-row .v { font-weight: 600; }
+
+  /* BUTTONS */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-bottom: 10px;
+    user-select: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-white {
+    background: #ffffff;
+    color: #000;
+    box-shadow: 0 4px 24px rgba(255,255,255,0.15);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid #333;
+    color: var(--text);
+  }
+  .btn-outline:active { background: #1a1a1a; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #fff;
+    color: #000;
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #f43f5e; color: #fff; }
+
+  .loader {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid #222;
+    border-top-color: #fff;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+  <div class="loader"><div class="spinner"></div>Загрузка...</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Заголовок</div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tg = window.Telegram.WebApp;
+try { tg.expand(); } catch (e) {}
+try {
+  tg.setHeaderColor('#0a0a0a');
+  tg.setBackgroundColor('#0a0a0a');
+} catch (e) {}
+
+const BOT_USERNAME = 'Admiral_Shop_Robot';
+
+function resolveUserId() {
+  try {
+    const fromUrl = new URLSearchParams(location.search).get('user_id');
+    if (fromUrl && /^\d+$/.test(fromUrl)) return String(fromUrl);
+  } catch (e) {}
+  try {
+    const tgId = tg.initDataUnsafe?.user?.id;
+    if (tgId && /^\d+$/.test(String(tgId))) return String(tgId);
+  } catch (e) {}
+  try {
+    const raw = tg.initData;
+    if (raw) {
+      const params = new URLSearchParams(raw);
+      const u = JSON.parse(params.get('user') || '{}');
+      if (u.id && /^\d+$/.test(String(u.id))) return String(u.id);
+    }
+  } catch (e) {}
+  return null;
+}
+
+let userId = resolveUserId();
+
+async function waitForUserId(maxWaitMs = 3000) {
+  const start = Date.now();
+  while (!userId && Date.now() - start < maxWaitMs) {
+    await new Promise(r => setTimeout(r, 100));
+    userId = resolveUserId();
+  }
+  return userId;
+}
+
+const app = document.getElementById('app');
+const toast = document.getElementById('toast');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+
+let state = {
+  products: [],
+  periods: [],
+  open: {},
+  loaded: false,
+};
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function fm(v) {
+  v = Number(v) || 0;
+  return Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',');
+}
+function showToast(text, isError = false) {
+  toast.textContent = text;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.className = 'toast' + (isError ? ' error' : ''), 2000);
+  tg.HapticFeedback?.notificationOccurred(isError ? 'error' : 'success');
+}
+function haptic() { tg.HapticFeedback?.impactOccurred('light'); }
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, opts);
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'Ошибка сервера');
+  return data;
+}
+
+function openModal(title, bodyHtml) {
+  modalTitle.textContent = title;
+  modalBody.innerHTML = bodyHtml;
+  modalOverlay.classList.add('show');
+}
+function closeModal() { modalOverlay.classList.remove('show'); }
+modalOverlay.addEventListener('click', e => {
+  if (e.target === modalOverlay) closeModal();
+});
+
+function render() {
+  if (!state.loaded) {
+    app.innerHTML = `<div class="loader"><div class="spinner"></div>Загрузка...</div>`;
+    return;
+  }
+
+  let html = `
+    <div class="hero">
+      <div class="hero-title">Admiral Shop</div>
+      <div class="hero-sub">Премиум-подписки · Мгновенная активация</div>
+    </div>
+  `;
+
+  for (const product of state.products) {
+    const isOpen = state.open[product.key];
+    html += `
+      <div class="product ${isOpen ? 'open' : ''}" data-product="${product.key}">
+        <div class="product-head" onclick="toggleProduct('${product.key}')">
+          <div class="product-icon">${product.emoji}</div>
+          <div>
+            <div class="product-name">${esc(product.name)}</div>
+            <div class="product-desc">${esc(product.desc)}</div>
+          </div>
+          <div class="product-arrow">▼</div>
+        </div>
+        <div class="product-body">
+          <div class="product-body-inner">
+            <div class="product-body-content">
+              ${product.plans.map(plan => `
+                <div class="plan">
+                  <div class="plan-title">${esc(plan.title)}</div>
+                  <div class="plan-desc">${esc(plan.desc)}</div>
+                  <div class="periods">
+                    ${state.periods.map(pd => `
+                      <div class="period-btn" onclick="buyProduct('${product.key}', '${plan.code}', '${pd.code}', ${plan.prices[pd.code]}, '${esc(product.name)} — ${esc(plan.title)} (${esc(pd.title)})')">
+                        <div class="period-name">${esc(pd.title)}</div>
+                        <div class="period-price">${fm(plan.prices[pd.code])} ₽</div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  app.innerHTML = html;
+}
+
+function toggleProduct(key) {
+  state.open[key] = !state.open[key];
+  haptic();
+  const el = document.querySelector(`[data-product="${key}"]`);
+  if (el) el.classList.toggle('open', state.open[key]);
+}
+
+async function buyProduct(productKey, planCode, periodCode, price, title) {
+  haptic();
+  if (!userId) return showToast('Не удалось определить пользователя', true);
+
+  openModal('Оформление заказа', `
+    <div class="modal-row"><span class="k">Товар</span><span class="v">${esc(title)}</span></div>
+    <div class="modal-row"><span class="k">Стоимость</span><span class="v">${fm(price)} ₽</span></div>
+    <div class="modal-row"><span class="k">Оплата</span><span class="v">CryptoBot</span></div>
+    <button class="btn btn-white" style="margin-top:16px" onclick="confirmBuy(${JSON.stringify({productKey, planCode, periodCode, price, title}).replace(/"/g, '&quot;')})">💳 Оплатить</button>
+    <button class="btn btn-outline" onclick="closeModal()">Отмена</button>
+  `);
+}
+
+async function confirmBuy(params) {
+  try {
+    const res = await api('/api/buy', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_id: Number(userId),
+        amount: params.price,
+        title: params.title,
+      })
+    });
+    closeModal();
+    if (res.pay_url) {
+      tg.openTelegramLink(res.pay_url);
+      showToast('Перенаправляю в CryptoBot...');
+    } else {
+      showToast('Ошибка: нет ссылки на оплату', true);
+    }
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadCatalog() {
+  try {
+    const data = await api('/api/catalog');
+    state.products = data.products;
+    state.periods = data.periods;
+    state.loaded = true;
+    render();
+  } catch (e) {
+    app.innerHTML = `
+      <div class="loader">
+        <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+        Не удалось загрузить каталог<br>
+        <span style="font-size:12px;opacity:0.6">${esc(e.message)}</span>
+      </div>
+    `;
+  }
+}
+
+async function boot() {
+  try { tg.ready(); } catch (e) {}
+  userId = await waitForUserId(3000);
+  loadCatalog();
+}
+
+boot();
+</script>
+</body>
+</html>
