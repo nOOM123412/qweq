@@ -98,14 +98,17 @@
     padding: 9px 0;
   }
   .info-row + .info-row { border-top: 1px solid rgba(255,255,255,0.05); }
+  
+  /* SVG иконки в инфо-блоках */
   .info-ico {
     width: 26px; height: 26px;
     border-radius: 9px;
     background: rgba(255,255,255,0.06);
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
     flex-shrink: 0;
   }
+  .info-ico svg { width: 14px; height: 14px; stroke: #d4d4d4; fill: none; stroke-width: 1.5; }
+  
   .info-text { font-size: 13px; line-height: 1.45; color: #d4d4d4; }
   .info-text b { color: var(--text); }
 
@@ -130,7 +133,6 @@
   }
   .stat-k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-
   /* ACTION BUTTONS (главное меню) */
   .actions { display: grid; gap: 12px; margin-top: 4px; }
   .action {
@@ -149,19 +151,17 @@
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
   }
   .action:active { transform: scale(0.975); border-color: rgba(255,255,255,0.3); }
+  
   .action-ico {
     width: 46px; height: 46px;
     border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
     flex-shrink: 0;
     background: linear-gradient(135deg, #2a2a2a, #151515);
     border: 1px solid #333;
   }
-  .action-ico.gold {
-    background: linear-gradient(135deg, #3a2f10, #1a1508);
-    border-color: #5a4a1c;
-  }
+  .action-ico svg { width: 22px; height: 22px; stroke: #e0e0e0; fill: none; stroke-width: 1.5; }
+
   .action-title {
     font-size: 16px;
     font-weight: 700;
@@ -219,6 +219,7 @@
     transition: background 0.2s;
   }
   .product-head:active { background: rgba(255,255,255,0.03); }
+  
   .product-icon {
     width: 44px; height: 44px;
     border-radius: 14px;
@@ -227,11 +228,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
     flex-shrink: 0;
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+  .product-icon svg { width: 22px; height: 22px; stroke: #e0e0e0; fill: none; stroke-width: 1.5; }
   .product.open .product-icon { transform: scale(1.1) rotate(-5deg); }
+
   .product-name {
     font-size: 17px;
     font-weight: 700;
@@ -334,13 +336,14 @@
   .modal {
     background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
     border-radius: 24px 24px 0 0;
-    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    /* Добавил отступ снизу, чтобы кнопки не улетали под хотбар */
+    padding: 24px 20px calc(90px + env(safe-area-inset-bottom));
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 86vh;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
     border-top: 1px solid rgba(255,255,255,0.1);
@@ -397,6 +400,8 @@
     gap: 12px;
   }
   .review:last-child { border-bottom: none; }
+  
+  /* Анонимные аватарки */
   .rev-ava {
     width: 36px; height: 36px;
     border-radius: 50%;
@@ -405,7 +410,9 @@
     font-size: 14px;
     font-weight: 700;
     color: #fff;
+    background: #2a2a2a; /* Серый фон для всех */
   }
+  
   .rev-body { flex: 1; min-width: 0; }
   .rev-top {
     display: flex;
@@ -457,7 +464,6 @@
   }
 
   .stars { color: #f5c451; font-size: 12px; letter-spacing: 1px; }
-
 
   /* BUTTONS */
   .btn {
@@ -591,12 +597,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 4px;
     padding: 9px 4px 7px;
     border: none;
     border-radius: 22px;
     background: transparent;
-    color: rgba(235, 235, 245, 0.6);
+    color: rgba(235, 235, 245, 0.5);
     font-family: inherit;
     font-size: 10px;
     font-weight: 600;
@@ -605,11 +611,18 @@
     transition: color 0.25s, background 0.35s, transform 0.2s;
   }
   .tab:active { transform: scale(0.94); }
+  
+  /* SVG иконки в хотбаре */
   .tab-ico {
-    font-size: 19px;
-    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
     transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+  .tab-ico svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
   .tab.active {
     color: #fff;
     background: rgba(255, 255, 255, 0.14);
@@ -618,22 +631,6 @@
       0 1px 6px rgba(0, 0, 0, 0.3);
   }
   .tab.active .tab-ico { transform: translateY(-1px) scale(1.08); }
-  .tab-badge {
-    position: absolute;
-    top: 4px;
-    right: 24%;
-    min-width: 15px;
-    height: 15px;
-    padding: 0 4px;
-    border-radius: 8px;
-    background: #f5c451;
-    color: #000;
-    font-size: 9px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 </style>
 </head>
 <body>
@@ -644,20 +641,29 @@
 
 <nav class="tabbar" id="tabbar">
   <button class="tab active" data-tab="home" onclick="setTab('home')">
-    <span class="tab-ico">🏠</span><span>Главная</span>
+    <span class="tab-ico">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </span>
+    <span>Главная</span>
   </button>
   <button class="tab" data-tab="shop" onclick="setTab('shop')">
-    <span class="tab-ico">🛍</span><span>Магазин</span>
+    <span class="tab-ico">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    </span>
+    <span>Магазин</span>
   </button>
   <button class="tab" data-tab="support" onclick="setTab('support')">
-    <span class="tab-ico">💬</span><span>Поддержка</span>
+    <span class="tab-ico">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </span>
+    <span>Поддержка</span>
   </button>
 </nav>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Модальное окно (bottom sheet) -->
+<!-- Модальное окно -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -677,10 +683,16 @@ try {
 const BOT_USERNAME = 'Raise_Shop_Robot';
 const TOTAL_REVIEWS = 317;
 
+// Объект с SVG-иконками для товаров
+const SVG_ICONS = {
+  claude: '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', // Стопка слоев
+  chatgpt: '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>', // Пузырь чата
+  gemini: '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' // Звезда
+};
+
 function resolveUserId() {
   try {
-    const fromUrl = new URLSearchParams(location.search).get('uid')
-      || new URLSearchParams(location.search).get('user_id');
+    const fromUrl = new URLSearchParams(location.search).get('uid') || new URLSearchParams(location.search).get('user_id');
     if (fromUrl && /^\d+$/.test(fromUrl)) return String(fromUrl);
   } catch (e) {}
   try {
@@ -744,7 +756,7 @@ function haptic(type) {
   } catch (e) {}
 }
 function showToast(text, isError = false) {
-  if (!toast) { console.warn('toast missing:', text); return; }
+  if (!toast) return;
   toast.textContent = text;
   toast.className = 'toast show' + (isError ? ' error' : '');
   clearTimeout(showToast._t);
@@ -762,10 +774,7 @@ async function api(path, opts = {}) {
 }
 
 function openModal(title, bodyHtml) {
-  if (!modalOverlay || !modalTitle || !modalBody) {
-    console.warn('modal DOM missing');
-    return;
-  }
+  if (!modalOverlay || !modalTitle || !modalBody) return;
   modalTitle.textContent = title;
   modalBody.innerHTML = bodyHtml;
   modalBody.scrollTop = 0;
@@ -776,18 +785,8 @@ function closeModal() {
 }
 
 // ============================================================
-//  ОТЗЫВЫ — 317 штук, генерируются детерминированно
+//  ОТЗЫВЫ — 317 штук (анонимизированы)
 // ============================================================
-const REVIEW_NAMES = [
-  'Артём К.','Данил М.','Кирилл С.','Максим В.','Егор Л.','Никита П.','Иван Р.','Дмитрий Т.',
-  'Алексей Ш.','Сергей Б.','Роман Д.','Влад Н.','Михаил Ю.','Павел Г.','Антон Ф.','Глеб Ч.',
-  'Тимур А.','Марк О.','Степан Е.','Юрий Х.','Олег З.','Фёдор И.','Григорий У.','Валера М.',
-  'Алина С.','Мария К.','Анна П.','Дарья Л.','Екатерина В.','Ольга Р.','Полина Н.','Софья Д.',
-  'Ксения Т.','Виктория Б.','Юлия Г.','Ирина М.','Настя Ф.','Люба Ч.','Вероника А.','Лиза О.',
-  'Егор В.','Давид К.','Арсений М.','Ростислав П.','Матвей С.','Захар Л.','Богдан Т.','Лев Н.',
-  'Таисия Р.','Ариана Ш.','Ника Б.','Ева Г.','Милана Д.','Агата К.','Амелия Ф.','Злата М.',
-];
-
 const REVIEW_TEXTS = [
   'Оформил Claude Pro на 3 месяца, доступ активировался моментально. Оплата прошла через CryptoBot за минуту, всё чётко.',
   'Брал ChatGPT Plus на месяц — подписку выдали в течение пары минут после оплаты. Общение в поддержке очень быстрое.',
@@ -890,7 +889,7 @@ const REVIEW_TEXTS = [
 const REVIEW_PRODUCTS = ['Claude Pro', 'ChatGPT Plus', 'Gemini AI Pro', 'Claude Max',
   'ChatGPT Go', 'Gemini AI Ultra', 'ChatGPT Pro', 'Claude Ultra'];
 
-// Детерминированный ГПСЧ — отзывы не меняются при перезагрузке
+// Детерминированный ГПСЧ
 function seededRandom(seed) {
   let s = seed % 2147483647;
   if (s <= 0) s += 2147483646;
@@ -905,33 +904,23 @@ const REVIEWS = (function buildReviews() {
   const out = [];
   const today = new Date();
   for (let i = 0; i < TOTAL_REVIEWS; i++) {
-    const name = REVIEW_NAMES[Math.floor(rnd() * REVIEW_NAMES.length)];
     const text = REVIEW_TEXTS[Math.floor(rnd() * REVIEW_TEXTS.length)];
     const product = REVIEW_PRODUCTS[Math.floor(rnd() * REVIEW_PRODUCTS.length)];
-    // звёзды с перекосом в пятёрки (реалистично для хорошего магазина)
     const roll = rnd();
     const stars = roll < 0.84 ? 5 : roll < 0.94 ? 4 : roll < 0.985 ? 3 : 2;
-    // дата: чем ближе к «сегодня», тем больше отзывов
     const daysAgo = Math.floor(Math.pow(rnd(), 1.6) * 400);
     out.push({
-      name, text, product, stars,
+      name: 'Аноним', // Имя всегда Аноним
+      text, product, stars,
       date: new Date(today.getTime() - daysAgo * 86400000),
     });
   }
-  out.sort((a, b) => b.date - a.date);   // новые сверху
+  out.sort((a, b) => b.date - a.date);
   return out;
 })();
 
 const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.stars, 0) / REVIEWS.length).toFixed(1);
 
-const AVA_PALETTE = ['#5b6cff', '#f5707a', '#f5a623', '#31c48d',
-  '#a06bff', '#22a7f0', '#e26bb0', '#7cb342'];
-
-function avatarColor(name) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 997;
-  return AVA_PALETTE[h % AVA_PALETTE.length];
-}
 function fmtDate(d) {
   const m = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
   return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
@@ -990,26 +979,36 @@ function renderHome() {
     <div class="panel">
       <div class="panel-title">О магазине</div>
       <div class="info-row">
-        <div class="info-ico">⚡</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
         <div class="info-text"><b>Мгновенная выдача.</b> Подписка активируется в среднем за 2–5 минут после оплаты — без ожидания и переписок.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">💳</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
         <div class="info-text"><b>Оплата в рублях.</b> CryptoBot принимает оплату криптовалютой; зарубежная карта и посредники не нужны.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">🔒</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
         <div class="info-text"><b>Личные подписки.</b> Никакого шаринга и общих аккаунтов — доступ только у вас, лимиты полные.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">🛠</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
         <div class="info-text"><b>Поддержка 24/7.</b> Отвечаем в этом же боте, обычно в течение 15 минут.</div>
       </div>
     </div>
 
     <div class="actions">
       <button class="action" onclick="openReviews()">
-        <div class="action-ico gold">⭐</div>
+        <div class="action-ico">
+          <svg viewBox="0 0 24 24" style="stroke: #f5c451"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
         <div>
           <div class="action-title">Отзывы <span class="pill">${TOTAL_REVIEWS}</span></div>
           <div class="action-sub"><span class="stars">${starStr(5)}</span> ${REVIEW_AVG} из 5 · средняя оценка покупателей</div>
@@ -1018,7 +1017,9 @@ function renderHome() {
       </button>
 
       <button class="action" onclick="setTab('support')">
-        <div class="action-ico">💬</div>
+        <div class="action-ico">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
         <div>
           <div class="action-title">Поддержка</div>
           <div class="action-sub">Напишите нам — ответ придёт прямо в чат бота</div>
@@ -1046,10 +1047,13 @@ function renderShop() {
 
   for (const product of state.products) {
     const isOpen = state.open[product.key];
+    // Подставляем иконку, если есть, иначе fallback
+    const iconSvg = SVG_ICONS[product.key] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>';
+    
     html += `
       <div class="product ${isOpen ? 'open' : ''}" data-product="${esc(product.key)}">
         <div class="product-head" onclick="toggleProduct('${esc(product.key)}')">
-          <div class="product-icon">${product.emoji}</div>
+          <div class="product-icon">${iconSvg}</div>
           <div>
             <div class="product-name">${esc(product.name)}</div>
             <div class="product-desc">${esc(product.desc)}</div>
@@ -1131,7 +1135,6 @@ async function confirmBuy() {
     });
     closeModal();
     if (res.pay_url) {
-      // запоминаем счёт, чтобы проверить оплату после возврата из CryptoBot
       try { sessionStorage.setItem('lastInvoice', String(res.invoice_id || '')); } catch (e) {}
       try { tg.openTelegramLink(res.pay_url); }
       catch (e) { window.open(res.pay_url, '_blank'); }
@@ -1142,7 +1145,6 @@ async function confirmBuy() {
   } catch (e) { showToast(e.message, true); }
 }
 
-// Проверяем, оплачен ли последний счёт (после возврата пользователя из CryptoBot)
 async function checkLastInvoice() {
   let invoiceId = '';
   try { invoiceId = sessionStorage.getItem('lastInvoice') || ''; } catch (e) {}
@@ -1158,7 +1160,6 @@ async function checkLastInvoice() {
     }
   } catch (e) {}
 }
-
 
 // ---------- ПОДДЕРЖКА ----------
 function renderSupport() {
@@ -1187,19 +1188,27 @@ function renderSupport() {
     <div class="panel">
       <div class="panel-title">Частые вопросы</div>
       <div class="info-row">
-        <div class="info-ico">⏱</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
         <div class="info-text"><b>Сколько ждать заказ?</b><br>Обычно 2–5 минут после подтверждения оплаты. В пиковые часы — до 30 минут.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">💳</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
         <div class="info-text"><b>Как оплатить?</b><br>На вкладке «Магазин» выберите тариф — откроется счёт CryptoBot. Сумма указана в рублях.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">🔁</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </div>
         <div class="info-text"><b>Можно продлить?</b><br>Да, оформите новый заказ на нужный период — доступ продлится автоматически.</div>
       </div>
       <div class="info-row">
-        <div class="info-ico">💰</div>
+        <div class="info-ico">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
         <div class="info-text"><b>Не пришёл заказ?</b><br>Напишите в форму выше с номером счёта — решим в течение 15 минут или вернём средства.</div>
       </div>
     </div>
@@ -1269,7 +1278,7 @@ async function sendSupport() {
 function reviewHtml(r) {
   return `
     <div class="review">
-      <div class="rev-ava" style="background:${avatarColor(r.name)}">${esc(r.name.charAt(0))}</div>
+      <div class="rev-ava">А</div>
       <div class="rev-body">
         <div class="rev-top">
           <span class="rev-name">${esc(r.name)}</span>
@@ -1348,10 +1357,9 @@ async function loadCatalog() {
 
 async function boot() {
   try { tg.ready(); tg.expand(); } catch (e) {}
-  render();                       // главная рисуется сразу, каталог не нужен
+  render(); // главная рисуется сразу, каталог не нужен
   userId = await waitForUserId(3000);
   loadCatalog();
-  // если пользователь вернулся из CryptoBot — проверим, оплачен ли счёт
   try { tg.onEvent('activated', checkLastInvoice); } catch (e) {}
   setTimeout(checkLastInvoice, 1500);
 }
